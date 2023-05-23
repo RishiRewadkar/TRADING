@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <style>
+    .footer {
+  padding: 20px;
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+  </style>
+</head>
+<body>
+
+<div class="jumbotron text-center">
+  <h1>Stock Trading</h1>
+  <p>experience trading without risk of investing!</p> 
+</div>
+  
+
+
+
+    
+ 
+
+<div class="container">
+    <div class="row"> 
+         <div class="col-xs-12 text-center">
+                <h2>Real Time IBM Stock Price $</h2>
+                <h1><div id="dataContainer"></div></h1>
+                <button type="button" class="btn btn-primary btn-lg" id="myButton" onclick="sendRequest()">Get My Portfolio</button>
+         </div>
+       
+    </div>
+  <div class="row">
+    <div class="col-sm-4">
+      <h3>User Name:</h3>
+      <h4><div id="name"></div></h4>
+    </div>
+    <div class="col-sm-4">
+      <h3>Balance$:</h3>
+      <h4><div id="amount"></div></h4>
+    </div>
+    <div class="col-sm-4">
+      <h3>IBM Stock</h3>        
+     <h4><div id="IBM"></div></h4> 
+    </div>
+  </div>
+</div>
+
+<div class="container">
+    <div class="row">
+            <div class="col-sm-6">
+                    <form  class="form-inline" id="myForm">
+                        <h3>
+                                <div class="form-group">
+                                    <label for="No of Shares to SELL">Enter Number of IBM Stock to Sell:</label>
+                                    <input type="number"class="form-control" name="quantity" placeholder="Enter Number">
+                                    <button class="btn btn-danger" type="submit">Place Sell Order</button>
+                                </div>
+                        </h3>
+
+
+                    </form>
+            </div>
+            <div class="col-sm-6">
+                    <form  class="form-inline" id="myForm2">
+                        <h3>
+                            <div class="form-group">
+                                <label for="No of Shares to BUY">Enter Number of IBM Stock to Buy:</label>
+                                <input type="number" class="form-control" name="quantity" placeholder="Enter Number">
+                                <button class="btn btn-success" type="submit">Place Buy Order</button>
+                            </div>        
+                        </h3>
+                    
+                    </form>
+            </div>
+    </div>
+</div>
+
+
+<div>
+    <hr>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6">
+            <h2>Project Desciption:</h2>
+            <h4>About:</h4>
+                <p>
+                After signing up, each user will be given $1000 as initial balance which they can invest. The user can then later use this money to buy IBM stock at real-time market price and sell the stock at real-time market price.
+                The user with the highest net worth, calculated as balance + (No. of IBM stock * IBM stock market value), will be ranked highest on the leaderboard.
+                Try to come up with the best strategy for when to invest your money in IBM stock and when to sell your stock to make the most profit.
+                </p>
+
+                <h4>Learning from this project:</h4>
+                <p>
+                Password encryption and decryption , JSON Web Token authorization, Route protection and  building RESTful API.
+                </p>
+
+                <h4>Tech stack used:</h4>
+                <ul>
+                <li>Node JS</li>
+                <li>Express JS</li>
+                <li>MongoDB Atlas</li>
+                <li>Mongoose</li>
+                <li>Handlebars</li>
+                <li>HTML</li>
+                <li>Bootstrap 3</li>
+                </ul>
+        </div>
+        <div class="col-sm-6">
+             <h4>Leader Board updates every 15 Second:</h4>
+            <div class="list-group">
+           <ol id="leaderboard"></ol>
+            </div>
+      
+
+
+        </div>
+    </div>
+</div>
+
+
+<footer class="footer fixed-bottom bg-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12">
+        <h5>Created by Rishi Rewadkar USC Student</h5>
+        <h5>Project Start Date 16 May 2023 - End Date 22 May 2023</h5>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script >
+
+$(document).ready(() => {
+  // Function to update the data
+   boardData = () => {
+    $.ajax({
+      url: '/stock/rank', // Replace with the actual endpoint in your Node.js server
+      type: 'GET', // Adjust the HTTP method as needed (e.g., 'GET', 'POST'),
+      success: function(response) {
+        // Update the data in the container
+        console.log(response)
+        let leaderboardData = '';
+            
+            // Loop through the response object and create list items
+            for (const item of response) {
+               
+              leaderboardData += `<li>User Name: ${item.name} - Net Worth: ${item.totalStockAndAssets} $ </li>`;
+            }
+
+            $('#leaderboard').html(leaderboardData);
+      },
+      error: function(error) {
+        // Handle any errors that occur during the request
+        console.error(error);
+      }
+    });
+  };
+
+  // Call the updateData() function initially
+  boardData();
+
+  // Set up a timer to call the updateData() function every 5 seconds (adjust the interval as needed)
+  setInterval(boardData, 15000);
+});
+
+
+
+// your-script.js
+$(document).ready(() => {
+  // Function to update the data
+  const updateData = () => {
+    $.ajax({
+      url: '/stock/current', // Replace with the actual endpoint in your Node.js server
+      type: 'GET', // Adjust the HTTP method as needed (e.g., 'GET', 'POST'),
+      success: function(response) {
+        // Update the data in the container
+        $('#dataContainer').text(response);
+      },
+      error: function(error) {
+        // Handle any errors that occur during the request
+        console.error(error);
+      }
+    });
+  };
+
+  // Call the updateData() function initially
+  updateData();
+
+  // Set up a timer to call the updateData() function every 5 seconds (adjust the interval as needed)
+  setInterval(updateData, 15000);
+});
+
+
+
+
+
+
+
+   // your-script.js
+$(document).ready(() => {
+  $('#myForm2').submit((event) => {
+    event.preventDefault(); // Prevent the default form submission behavior
+
+    const formData = $('#myForm2').serialize(); // Serialize the form data
+
+    $.ajax({
+      url: '/stock/buy', // Replace with the actual endpoint in your Node.js server
+      type: 'POST', // Adjust the HTTP method as needed (e.g., 'GET', 'POST')
+      data: formData,
+      success: function(response) {
+        alert(response);
+      },
+      error: function(error) {
+        // Handle any errors that occur during the request
+        console.error(error);
+      }
+    });
+  });
+});
+
+
+
+
+
+
+    // your-script.js
+$(document).ready(() => {
+  $('#myForm').submit((event) => {
+    event.preventDefault(); // Prevent the default form submission behavior
+
+    const formData = $('#myForm').serialize(); // Serialize the form data
+
+    $.ajax({
+      url: '/stock/sell', // Replace with the actual endpoint in your Node.js server
+      type: 'POST', // Adjust the HTTP method as needed (e.g., 'GET', 'POST')
+      data: formData,
+      success: function(response) {
+        alert(response);
+      },
+      error: function(error) {
+        // Handle any errors that occur during the request
+        console.error(error);
+      }
+    });
+  });
+});
+
+
+
+    function sendRequest() {
+    console.log("in HERE I AM")
+    $.ajax({
+      url: '/stock/portfolio', // Replace with the actual endpoint in your Node.js server
+      type: 'GET', // Adjust the HTTP method as needed (e.g., 'GET', 'POST')
+      data: {
+        // Add any data you want to send in the request body
+      },
+      success: function(response) {
+        // Handle the response from the server
+        $('#amount').text(response.amount );
+         $('#name').text(response.name);
+          $('#email').text(response.email);
+          $('#IBM').text(response.IBM);
+        console.log(response);
+      },
+      error: function(error) {
+        // Handle any errors that occur during the request
+        console.error(error);
+      }
+    });
+  }
+  </script>
+</body>
+</html>

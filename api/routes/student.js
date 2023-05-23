@@ -7,7 +7,14 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const checkAuth = require('../middleware/check-auth');
 
+
+
+
+
+
 router.get('/',checkAuth, (req,res,next)=>{
+
+
  Student.find().then(result=>{
     res.status(200).json({
         studentsData:result
@@ -23,7 +30,12 @@ router.get('/',checkAuth, (req,res,next)=>{
 })
 
 
+
 router.post('/login', (req,res,next)=>{
+ 
+
+ console.log("Req reched login")
+console.log(req.body.name)
     Student.find({name: req.body.name})
     .exec()
     .then(user =>{
@@ -51,10 +63,12 @@ router.post('/login', (req,res,next)=>{
                     expiresIn: '6hr'
                 }
                 );
-                res.status(200).json({
+                res.cookie('token', token, {maxAge: 6*60*60*1000, httpOnly: true})
+                res.render('main', {layout: 'dashboard', token: token}); 
+               /* res.status(200).json({
                     name: user[0].name,
                     toekn: token
-                })
+                })*/
             }
         })
     })
@@ -89,9 +103,11 @@ router.post('/signup',(req,res,next)=>{
 
              student.save().then(result=>{
                 console.log(result);
-                res.status(200).json({
+                res.render('main', {layout: 'index'});
+               /* res.status(200).json({
                     newStudent: result
                 })
+                */
             })
             .catch(err=>{
                 console.log(err);
