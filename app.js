@@ -5,7 +5,6 @@ const studentRoute = require('./api/routes/student')
 const stockRoute = require('./api/routes/stock')
 const mongoose = require('mongoose');
 const bodyparser = require('body-parser');
-
 const handlebars = require('express-handlebars');
 const router = require('./api/routes/student');
 
